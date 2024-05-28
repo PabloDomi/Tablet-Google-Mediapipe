@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "tvos", "android", "web"],
+  "ios": {
+    "modules": ["Pose_landmarkerModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.pose_landmarker.Pose_landmarkerModule"]
+  }
+}
