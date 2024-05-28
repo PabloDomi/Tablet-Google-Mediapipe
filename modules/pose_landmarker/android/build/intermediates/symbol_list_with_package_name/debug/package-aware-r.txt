@@ -1,0 +1,1 @@
+expo.modules.pose_landmarker
