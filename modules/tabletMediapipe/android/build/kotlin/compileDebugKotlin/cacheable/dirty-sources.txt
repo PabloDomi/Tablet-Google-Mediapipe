@@ -1,8 +1,0 @@
-C:\Users\Pablo\Desktop\Dev\Tablet-Google-Mediapipe\modules\tabletMediapipe\android\src\main\java\com\example\tablet_mediapipe\tablet_mediapipeView.kt
-C:\Users\Pablo\Desktop\Dev\Tablet-Google-Mediapipe\modules\tabletMediapipe\android\src\main\java\com\example\tablet_mediapipe\tablet_mediapipeModule.kt
-C:\Users\Pablo\Desktop\Dev\Tablet-Google-Mediapipe\modules\tabletMediapipe\android\src\main\java\com\example\tablet_mediapipe\MainActivity.kt
-C:\Users\Pablo\Desktop\Dev\Tablet-Google-Mediapipe\modules\tabletMediapipe\android\src\main\java\com\example\tablet_mediapipe\fragment\CameraFragment.kt
-C:\Users\Pablo\Desktop\Dev\Tablet-Google-Mediapipe\modules\tabletMediapipe\android\src\main\java\com\example\tablet_mediapipe\PoseLandmarkerHelper.kt
-C:\Users\Pablo\Desktop\Dev\Tablet-Google-Mediapipe\modules\tabletMediapipe\android\src\main\java\com\example\tablet_mediapipe\MainViewModel.kt
-C:\Users\Pablo\Desktop\Dev\Tablet-Google-Mediapipe\modules\tabletMediapipe\android\src\main\java\com\example\tablet_mediapipe\fragment\PermissionsFragment.kt
-C:\Users\Pablo\Desktop\Dev\Tablet-Google-Mediapipe\modules\tabletMediapipe\android\src\main\java\com\example\tablet_mediapipe\OverlayView.kt
