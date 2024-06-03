@@ -1,14 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { hello } from './modules/pose_landmarker'
+import { Button, StyleSheet, Text, View } from 'react-native';
+// import { startPoseLandmarker } from './modules/pose_landmarker'
+import { useState } from 'react';
+import { startPoseLandmarker } from './modules/tabletMediapipe';
 
 export default function App() {
+
+  const [showMediapipe, setShowMediapipe] = useState<boolean>(false);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <Text>{hello()}</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      {!showMediapipe &&
+        <View style={styles.container}>
+          <Text>Open up App.tsx to start working on your app!</Text>
+          <Button title="Start Mediapipe" onPress={() => setShowMediapipe(true)} />
+        </View>
+      }
+      {showMediapipe &&
+        <View style={styles.container}>
+          <Text>{startPoseLandmarker()}</Text>
+          <Button title="Stop Mediapipe" onPress={() => setShowMediapipe(false)} />
+          <StatusBar style="auto" />
+        </View>
+      }
+    </>
   );
 }
 
