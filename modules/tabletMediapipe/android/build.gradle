@@ -72,6 +72,10 @@ android {
   buildToolsVersion = "34.0.0"
 }
 
+kapt {
+  includeCompileClasspath = false
+}
+
 dependencies {
 
   // App compat and UI things
@@ -115,6 +119,7 @@ dependencies {
   // MediaPipe Library
   implementation 'com.google.mediapipe:tasks-vision:0.10.14'
 
+
   testImplementation 'junit:junit'
   androidTestImplementation 'androidx.test.ext:junit'
   androidTestImplementation 'androidx.test.espresso:espresso-core'
@@ -129,6 +134,7 @@ dependencies {
   implementation 'androidx.activity:activity-compose:1.9.0'
   debugImplementation 'androidx.compose.ui:ui-test-manifest:1.6.7'
   debugImplementation 'androidx.compose.ui:ui-tooling:1.6.7'
+
 
 
 
@@ -148,4 +154,7 @@ dependencies {
   // androidTestImplementation(libs.androidx.ui.test.junit4)
   // debugImplementation(libs.androidx.ui.tooling)
   // debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Expo modules dependencies
+    implementation 'com.facebook.react:react-native:0.63.4'
 }
