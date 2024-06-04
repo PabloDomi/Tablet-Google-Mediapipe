@@ -16,6 +16,7 @@
 package com.example.tablet_mediapipe.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -48,6 +49,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
     companion object {
         private const val TAG = "Pose Landmarker"
+        var poseResults: MutableList<String> = mutableListOf()
     }
 
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
@@ -103,6 +105,12 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     override fun onDestroyView() {
         _fragmentCameraBinding = null
         super.onDestroyView()
+
+        // Log the pose results
+        Log.d(TAG, "Pose Results on Destroy View:")
+        poseResults.forEach { result ->
+            Log.d(TAG, result)
+        }
 
         // Shut down our background executor
         backgroundExecutor.shutdown()
@@ -254,11 +262,14 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private fun logResults(results: PoseLandmarkerResult) {
         results.landmarks().forEachIndexed { poseIndex, landmarks ->
             landmarks.forEachIndexed { landmarkIndex, landmark ->
-                Log.d(
-                    TAG, "Pose $poseIndex - Landmark $landmarkIndex: " +
-                            "x=${landmark.x()}, y=${landmark.y()}, z=${landmark.z()}, " +
-                            "visibility=${landmark.visibility()}, presence=${landmark.presence()}"
-                )
+                val logMessage = "Pose $poseIndex - Landmark $landmarkIndex: " +
+                        "x=${landmark.x()}, y=${landmark.y()}, z=${landmark.z()}, " +
+                        "visibility=${landmark.visibility()}, presence=${landmark.presence()}"
+
+                // Log.d(TAG, logMessage)
+
+                // Agregar el resultado al array
+                poseResults.add(logMessage)
             }
         }
     }

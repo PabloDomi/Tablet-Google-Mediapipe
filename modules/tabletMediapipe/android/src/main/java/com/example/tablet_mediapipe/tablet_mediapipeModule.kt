@@ -4,62 +4,33 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.BroadcastReceiver
+import android.view.ViewGroup
+import com.example.tablet_mediapipe.fragment.CameraFragment
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.fabric.events.EventEmitterWrapper
+import expo.modules.adapters.react.services.EventEmitterModule
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.events.EventEmitter
 
+
 class tablet_mediapipeModule : Module() {
-    private val receiver = landmarkReceiver()
 
     override fun definition() = ModuleDefinition {
-        Name("PoseLandmarker")
+        Name("tablet_mediapipeView")
 
-        Function("startListening") {
-            val filter = IntentFilter("com.example.tablet_mediapipe.LANDMARK_UPDATE")
-            appContext.reactContext?.registerReceiver(receiver, filter)
-        }
+        Events("onLandmarkReceived")
 
-        Function("stopListening") {
-            val landmarkReceiver = landmarkReceiver()
-            appContext.reactContext?.unregisterReceiver(receiver)
-        }
-
-        OnDestroy {
-            try {
-                appContext.reactContext?.unregisterReceiver(receiver)
-            } catch (e: IllegalArgumentException) {
-                // Receiver not registered
+        View(
+            tablet_mediapipeView::class,
+            body = {
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             }
+        )
+
+        Function("getPoseResults") {
+            return@Function CameraFragment.poseResults
         }
-    }
-}
 
-class landmarkReceiver : BroadcastReceiver() {
-
-    private lateinit var eventEmitter: EventEmitter
-
-    override fun onReceive(context: Context?, intent: Intent?) {
-        intent?.let {
-            val poseIndex = it.getIntExtra("poseIndex", -1)
-            val landmarkIndex = it.getIntExtra("landmarkIndex", -1)
-            val x = it.getFloatExtra("x", -1f)
-            val y = it.getFloatExtra("y", -1f)
-            val z = it.getFloatExtra("z", -1f)
-            val visibility = it.getFloatExtra("visibility", -1f)
-            val presence = it.getFloatExtra("presence", -1f)
-
-            eventEmitter.emit(
-                "onLandmarkReceived",
-                mapOf(
-                    "poseIndex" to poseIndex,
-                    "landmarkIndex" to landmarkIndex,
-                    "x" to x,
-                    "y" to y,
-                    "z" to z,
-                    "visibility" to visibility,
-                    "presence" to presence
-                )
-            )
-        }
     }
 }

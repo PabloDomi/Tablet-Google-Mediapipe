@@ -1,11 +1,11 @@
 import { requireNativeViewManager } from 'expo-modules-core';
+import { ViewProps } from 'react-native';
 import * as React from 'react';
 
-import { tablet_mediapipeViewProps } from './tablet_mediapipe.types';
 
-const NativeView: React.ComponentType<tablet_mediapipeViewProps> =
-  requireNativeViewManager('tablet_mediapipe');
+const NativeView: React.ComponentType<ViewProps> =
+  requireNativeViewManager('tablet_mediapipeView');
 
-export default function tablet_mediapipeView(props: tablet_mediapipeViewProps) {
+export default function tablet_mediapipeView(props: ViewProps) {
   return <NativeView {...props} />;
 }
