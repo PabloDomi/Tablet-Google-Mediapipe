@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { startPoseLandmarker } from './modules/tabletMediapipe'
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Tablet_mediapipeView from './modules/tabletMediapipe/src/tablet_mediapipeView';
 
 export default function App() {
@@ -38,11 +38,15 @@ export default function App() {
         </View>
       }
       {showMediapipe &&
-        <View style={styles.container}>
-          <Tablet_mediapipeView style={{ flex: 1, width: '100%', height: '80%' }} />
-          <Button title="Stop Mediapipe" onPress={handleCloseMediapipe} />
-          <StatusBar style="auto" />
-        </View>
+        <>
+          <View style={styles.container}>
+            <Tablet_mediapipeView style={{ flex: 1, width: '100%', height: '80%' }} />
+          </View>
+          <View style={styles.react}>
+            <Button title="Stop Mediapipe" onPress={handleCloseMediapipe} />
+            <StatusBar style="auto" />
+          </View>
+        </>
       }
     </>
   );
@@ -50,9 +54,16 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 8,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 40
+  },
+  react: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-  },
+  }
 });
