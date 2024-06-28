@@ -1,21 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { startPoseLandmarker } from './modules/tabletMediapipe'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Tablet_mediapipeView from './modules/tabletMediapipe/src/tablet_mediapipeView';
+import useHealthData from './src/hooks/useHealthData';
 
 export default function App() {
 
   const [showMediapipe, setShowMediapipe] = useState<boolean>(false);
   const [landmarks, setLandmarks] = useState<string[]>([]);
+  const [date, setDate] = useState<Date>(new Date());
+  const { steps, flights, distance, readData } = useHealthData(date)
 
 
   const handleCloseMediapipe = () => {
     setShowMediapipe(false);
     const results = startPoseLandmarker();
+    setLandmarks(results);
     let pose = 0;
     let landmark = 0;
-    for (let i = 0; i < results.length; i++) {
+    for (let i = 0; i < landmarks.length; i++) {
       console.log(`Pose: ${pose}\n\tLandmark ${landmark}:\n\t ${results[i]}`);
       if (i % 32 === 0) {
         pose++;
@@ -24,10 +28,22 @@ export default function App() {
         landmark++;
       }
     }
-    setLandmarks(results);
+    const currentDate: Date = new Date();
+    setDate(currentDate);
   }
 
-  // Usar "landmarks" para llamar a la api de IA y obtener la información de la pose
+  useEffect(() => {
+    readData();
+  }, [date]);
+
+  console.log("Steps: ", steps, "Flights: ", flights, "Distance: ", distance)
+
+  // Usar "landmarks" para enviarlos a la api y hacer los cálculos del módulo de la IA para, posteriormente, 
+  // representarlos en el dashboard de la aplicación web
+
+  // Usar "steps", "flights" y "distance" y la date de ese momento, para enviarlos a la base de datos y 
+  // representarlos en el dashboard de la aplicación web
+
 
   return (
     <>
