@@ -52,7 +52,6 @@ const useHealthData = (date: Date) => {
         });
         const totalFloors = floorsClimbed.reduce((sum, cur) => sum + cur.floors, 0);
         setFlights(totalFloors);
-        // console.log(floorsClimbed);
         };
 
         const readData = async () => {

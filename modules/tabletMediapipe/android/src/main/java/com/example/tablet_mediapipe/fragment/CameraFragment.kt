@@ -262,8 +262,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private fun logResults(results: PoseLandmarkerResult) {
         results.landmarks().forEachIndexed { poseIndex, landmarks ->
             landmarks.forEachIndexed { landmarkIndex, landmark ->
-                val logMessage = "Pose $poseIndex - Landmark $landmarkIndex: " +
-                        "x=${landmark.x()}, y=${landmark.y()}, z=${landmark.z()}, " +
+                val logMessage = "x=${landmark.x()}, y=${landmark.y()}, z=${landmark.z()}, " +
                         "visibility=${landmark.visibility()}, presence=${landmark.presence()}"
 
                 // Log.d(TAG, logMessage)
