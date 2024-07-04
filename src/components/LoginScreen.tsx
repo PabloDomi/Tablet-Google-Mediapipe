@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
 import styles from '../css/styles';
+import { LoginScreenProps } from '../utils/types';
+import getPatientData from '../services/getPatientData';
 
-interface LoginScreenProps {
-    onLogin: (tabletNumber: number) => void;
-}
+const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, tabletNumber, setTabletNumber }) => {
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
-    const [tabletNumber, setTabletNumber] = useState<number>(0);
-
-    const handleLogin = () => {
+    const handleLogin = async () => {
+        if (tabletNumber === 0) {
+            return alert('Introduce un número de tablet válido')
+        }
         if (tabletNumber > 0) {
-            onLogin(tabletNumber);
+            const response = await getPatientData.checkLogin(tabletNumber);
+            if (response) {
+                onLogin(response);
+            } else {
+                alert('Introduce un número de tablet válido');
+            }
         } else {
-            alert('Introduce un número de tablet válido');
+            alert('Error en el Login');
         }
     };
 

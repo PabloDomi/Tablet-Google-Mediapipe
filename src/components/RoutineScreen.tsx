@@ -29,14 +29,15 @@ const RoutineScreen: React.FC<RoutineScreenProps> = ({
             </TouchableOpacity>
             <ScrollView contentContainerStyle={styles.routineContent}>
                 <View style={styles.routineHeader}>
-                    <Text style={styles.routineTitle}>{routine.title ?? 'Error cargando la rutina...'}</Text>
+                    <Text style={styles.routineTitle}>{routine.name ?? 'Error cargando la rutina...'}</Text>
+                    <Text style={styles.estimatedTime}>{routine.estimatedTime ?? 0} minutos</Text>
                     <Text style={styles.routineDescription}>{routine.description ?? ''}</Text>
                 </View>
             </ScrollView>
             <FlatList
                 data={routine.exercises}
-                renderItem={({ item }) => (
-                    <View>
+                renderItem={({ item, index }) => (
+                    <View key={index}>
                         <TouchableOpacity
                             style={styles.exerciseItem}
                             onPress={() => toggleSection(item.id ?? '')}
@@ -50,12 +51,11 @@ const RoutineScreen: React.FC<RoutineScreenProps> = ({
                         </TouchableOpacity>
                         <Collapsible collapsed={!activeSections.includes(item.id ?? '')}>
                             <View style={styles.exerciseDetails}>
-                                <Text style={styles.exerciseDetailsText}>{item.details}</Text>
+                                <Text style={styles.exerciseDetailsText}>{item.description}</Text>
                             </View>
                         </Collapsible>
                     </View>
                 )}
-                keyExtractor={(item) => item.id ?? ''}
                 contentContainerStyle={styles.exerciseList}
             />
             <TouchableOpacity
