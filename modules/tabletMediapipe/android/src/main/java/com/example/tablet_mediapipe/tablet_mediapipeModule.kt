@@ -32,5 +32,9 @@ class tablet_mediapipeModule : Module() {
             return@Function CameraFragment.poseResults
         }
 
+        Function("getFramesPerSecond") {
+            return@Function CameraFragment.fpsResults
+        }
+
     }
 }

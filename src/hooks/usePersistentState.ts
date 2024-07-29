@@ -7,7 +7,6 @@ function usePersistentState() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [tabletNumber, setTabletNumber] = useState<number>(0);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(0);
-  const [isRoutineButtonEnabled, setIsRoutineButtonEnabled] = useState<boolean>(true);
   const [patientData, setPatientData] = useState<CheckTabletTypes>({
     routine_id: 0,
     patient_id: 0,
@@ -15,6 +14,7 @@ function usePersistentState() {
     treatment_cadence: 0
   });
   const [exercisesThisWeek, setExercisesThisWeek] = useState<number>(0);
+  const [canStartRoutine, setCanStartRoutine] = useState<boolean>(true);
   const [routine, setRoutine] = useState<RoutineType>({
     name: 'Rutina de Ejemplo',
     description: 'Esta es una rutina de ejemplo para demostración.',
@@ -50,14 +50,14 @@ function usePersistentState() {
             setCurrentExerciseIndex(parseInt(storedCurrentExerciseIndex));
           }
 
-          const storedIsRoutineButtonEnabled = await AsyncStorage.getItem('isRoutineButtonEnabled');
-          if (storedIsRoutineButtonEnabled !== null) {
-            setIsRoutineButtonEnabled(JSON.parse(storedIsRoutineButtonEnabled));
-          }
-
           const storedPatientData = await AsyncStorage.getItem('patientData');
           if (storedPatientData !== null) {
             setPatientData(JSON.parse(storedPatientData));
+          }
+
+          const storedCanStartRoutine = await AsyncStorage.getItem('canStartRoutine');
+          if (storedCanStartRoutine !== null) {
+            setCanStartRoutine(JSON.parse(storedCanStartRoutine));
           }
 
           const storedExercisesThisWeek = await AsyncStorage.getItem('exercisesThisWeek');
@@ -82,22 +82,43 @@ function usePersistentState() {
 
   const clearPersistentData = async () => {
     await AsyncStorage.removeItem('isAuthenticated');
+    setIsAuthenticated(false);
     await AsyncStorage.removeItem('tabletNumber');
+    setTabletNumber(0);
     await AsyncStorage.removeItem('currentExerciseIndex');
-    await AsyncStorage.removeItem('isRoutineButtonEnabled');
+    setCurrentExerciseIndex(0);
     await AsyncStorage.removeItem('patientData');
+    setPatientData({
+      routine_id: 0,
+      patient_id: 0,
+      treatment_time: 0,
+      treatment_cadence: 0
+    })
     await AsyncStorage.removeItem('exercisesThisWeek');
+    setExercisesThisWeek(0);
     await AsyncStorage.removeItem('routine');
+    setRoutine({
+      name: 'Rutina de Ejemplo',
+      description: 'Esta es una rutina de ejemplo para demostración.',
+      estimatedTime: 30,
+      exercises: [
+        { id: '1', name: 'Ejercicio 1: Flexiones', description: 'Haz 3 series de 15 repeticiones.' },
+        { id: '2', name: 'Ejercicio 2: Sentadillas', description: 'Haz 4 series de 20 repeticiones.' },
+        { id: '3', name: 'Ejercicio 3: Abdominales', description: 'Haz 3 series de 30 repeticiones.' },
+      ],
+    })
+    await AsyncStorage.removeItem('canStartRoutine');
+    setCanStartRoutine(true); // Restablecer canStartRoutine a true después de limpiar los datos
   };
 
   const saveStateToStorage = async () => {
     await AsyncStorage.setItem('isAuthenticated', JSON.stringify(isAuthenticated));
     await AsyncStorage.setItem('tabletNumber', tabletNumber?.toString() ?? '');
     await AsyncStorage.setItem('currentExerciseIndex', currentExerciseIndex.toString());
-    await AsyncStorage.setItem('isRoutineButtonEnabled', JSON.stringify(isRoutineButtonEnabled));
     await AsyncStorage.setItem('patientData', JSON.stringify(patientData));
     await AsyncStorage.setItem('exercisesThisWeek', exercisesThisWeek.toString());
     await AsyncStorage.setItem('routine', JSON.stringify(routine));
+    await AsyncStorage.setItem('canStartRoutine', JSON.stringify(canStartRoutine));
   };
 
   useEffect(() => {
@@ -110,8 +131,8 @@ function usePersistentState() {
       isSecondRender.current = false;
       return;
     }
-      saveStateToStorage();
-  }, [isAuthenticated, tabletNumber, currentExerciseIndex, isRoutineButtonEnabled, patientData, exercisesThisWeek, routine]);
+    saveStateToStorage();
+  }, [isAuthenticated, tabletNumber, currentExerciseIndex, patientData, exercisesThisWeek, routine, canStartRoutine]);
 
   return {
     isAuthenticated,
@@ -120,15 +141,15 @@ function usePersistentState() {
     setTabletNumber,
     currentExerciseIndex,
     setCurrentExerciseIndex,
-    isRoutineButtonEnabled,
-    setIsRoutineButtonEnabled,
     patientData,
     setPatientData,
     exercisesThisWeek,
     setExercisesThisWeek,
     routine,
     setRoutine,
-    clearPersistentData
+    clearPersistentData,
+    setCanStartRoutine,
+    canStartRoutine
   };
 }
 

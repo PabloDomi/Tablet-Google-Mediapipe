@@ -1,0 +1,1 @@
+export const LogoutPassword = '1234'

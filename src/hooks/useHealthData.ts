@@ -8,12 +8,12 @@ import {
 } from 'react-native-health-connect';
 import { TimeRangeFilter } from 'react-native-health-connect/lib/typescript/types/base.types';
 
-const useHealthData = (date: Date) => { 
+const useHealthData = () => { 
     const [steps, setSteps] = useState(0);
     const [flights, setFlights] = useState(0);
     const [distance, setDistance] = useState(0);
 
-    const readSampleData = async () => {
+    const readSampleData = async (dateStart: string, dateEnd: string) => {
         // initialize the client
         const isInitialized = await initialize();
         if (!isInitialized) {
@@ -29,8 +29,8 @@ const useHealthData = (date: Date) => {
 
         const timeRangeFilter: TimeRangeFilter = {
             operator: 'between',
-            startTime: new Date(date.setHours(0, 0, 0, 0)).toISOString(),
-            endTime: new Date(date.setHours(23, 59, 59, 999)).toISOString(),
+            startTime: dateStart,
+            endTime: dateEnd,
         };
 
         // Steps
@@ -54,11 +54,11 @@ const useHealthData = (date: Date) => {
         setFlights(totalFloors);
         };
 
-        const readData = async () => {
+        const readData = async (date1: string, date2: string) => {
             if (Platform.OS !== 'android') {
                 return;
             }
-            readSampleData();
+            readSampleData(date1, date2);
         }
 
         return {

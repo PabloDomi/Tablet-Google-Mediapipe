@@ -50,6 +50,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     companion object {
         private const val TAG = "Pose Landmarker"
         var poseResults: MutableList<String> = mutableListOf()
+        var fpsResults: Float = 0.0f
     }
 
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
@@ -67,6 +68,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
     /** Blocking ML operations are performed using this executor */
     private lateinit var backgroundExecutor: ExecutorService
+
+    private var frameCount = 0
+    private var startTime = System.currentTimeMillis()
 
     override fun onResume() {
         super.onResume()
@@ -200,6 +204,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
                 .also {
                     it.setAnalyzer(backgroundExecutor) { image ->
                         detectPose(image)
+                        calculateFps()
                     }
                 }
 
@@ -235,6 +240,22 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             fragmentCameraBinding.viewFinder.display.rotation
     }
 
+    private fun calculateFps() {
+        frameCount++
+        val currentTime = System.currentTimeMillis()
+        val elapsedTime = currentTime - startTime
+
+        if (elapsedTime >= 1000) {
+            val fps = frameCount / (elapsedTime / 1000.0).toFloat()
+            Log.d(TAG, "FPS: $fps")
+
+            fpsResults = fps
+
+            frameCount = 0
+            startTime = currentTime
+        }
+    }
+
     // Update UI after pose have been detected. Extracts original
     // image height/width to scale and place the landmarks properly through
     // OverlayView
@@ -263,7 +284,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         results.landmarks().forEachIndexed { poseIndex, landmarks ->
             landmarks.forEachIndexed { landmarkIndex, landmark ->
                 val logMessage = "x=${landmark.x()}, y=${landmark.y()}, z=${landmark.z()}, " +
-                        "visibility=${landmark.visibility()}, presence=${landmark.presence()}"
+                        "visibility=${landmark.visibility().get()}"
 
                 // Log.d(TAG, logMessage)
 

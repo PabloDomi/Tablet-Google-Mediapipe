@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { startPoseLandmarker } from './modules/tabletMediapipe'
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { startPoseLandmarker, getFramesPerSecond } from './modules/tabletMediapipe'
 import React, { useEffect, useState } from 'react';
 import Tablet_mediapipeView from './modules/tabletMediapipe/src/tablet_mediapipeView';
 import useHealthData from './src/hooks/useHealthData';
@@ -14,11 +14,49 @@ import RoutineScreen from './src/components/RoutineScreen';
 import getPatientData from './src/services/getPatientData';
 import useCheckDate from './src/hooks/useCheckDate';
 import usePersistentState from './src/hooks/usePersistentState';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import LogoutScreen from './src/components/LogoutScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function App() {
 
+  // Controla la visibilidad de la cámara
+  const [showMediapipe, setShowMediapipe] = useState<boolean>(false);
+
+  // Fecha actual para enviar a la API
+  const [dateExerciseStarted, setDateExerciseStarted] = useState<Date>(new Date());
+
+  // Health Connect data
+  const { steps, flights, distance, readData } = useHealthData()
+
+  // Estado de comienzo de rutina
+  const [routineStarted, setRoutineStarted] = useState<boolean>(false);
+
+  // Estado para los desplegables de los ejercicios
+  const [activeSections, setActiveSections] = useState<number[]>([]);
+
+  // Estado para mostrar el Modal de Logout
+  const [showLogout, setShowLogout] = useState<boolean>(false);
+
+  /*
+    TODO:           
+      6. (Calentada) mostrar una barra de progreso según se van realizando los ejercicios? (opcional)
+      7. Intentar de alguna manera añadir datos a la aplicación de Health Connect para ver si lee y envía los datos
+         correctamente.
+  */
+
+  // Función para obtener y mostrar todos los datos almacenados en AsyncStorage
+  const viewAsyncStorageContent = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const result = await AsyncStorage.multiGet(keys);
+      console.log("Async Storage: ", result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Hook para obtener y almacenar los datos persistentes
   const {
     isAuthenticated,
     setIsAuthenticated,
@@ -26,80 +64,50 @@ export default function App() {
     setTabletNumber,
     currentExerciseIndex,
     setCurrentExerciseIndex,
-    isRoutineButtonEnabled,
-    setIsRoutineButtonEnabled,
     patientData,
     setPatientData,
     exercisesThisWeek,
     setExercisesThisWeek,
     routine,
     setRoutine,
-    clearPersistentData
+    clearPersistentData,
+    setCanStartRoutine,
+    canStartRoutine
   } = usePersistentState();
 
+  // Llama a esta función en algún lugar de tu código para ver los datos
+  useEffect(() => {
+    viewAsyncStorageContent();
+  }, [isAuthenticated]);
 
-  // Controla la visibilidad de la cámara
-  const [showMediapipe, setShowMediapipe] = useState<boolean>(false);
-
-  // Landmarks para enviar a la API
-  const [landmarks, setLandmarks] = useState<string[]>([]);
-
-  // Fecha actual para enviar a la API
-  const [date, setDate] = useState<Date>(new Date());
-
-  // Health Connect data
-  const { steps, flights, distance, readData } = useHealthData(date)
-
-  // Controla que la lectura de Health Connect se haga después de la primera lectura de landmarks
-  const [flagHC, setFlagHC] = useState<boolean>(false)
-
-  // Estado de comienzo de rutina
-  const [routineStarted, setRoutineStarted] = useState<boolean>(false);
-
-  // Estado para los desplegables de los ejercicios
-  const [activeSections, setActiveSections] = useState<string[]>([]);
-
-
-  /*
-    TODO:           
-      6. (Calentada) mostrar una barra de progreso según se van realizando los ejercicios? (opcional)
-      7. Intentar de alguna manera añadir datos a la aplicación de Health Connect para ver si lee y envía los datos
-         correctamente.
-      8. Crear una manera de asignar un nº de tablet a un paciente en la aplicación web.
-  */
-
-  // // Función para obtener y mostrar todos los datos almacenados en AsyncStorage
-  // const viewAsyncStorageContent = async () => {
-  //   try {
-  //     const keys = await AsyncStorage.getAllKeys();
-  //     const result = await AsyncStorage.multiGet(keys);
-  //     console.log("Async Storage: ", result);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // // Llama a esta función en algún lugar de tu código para ver los datos
-  // viewAsyncStorageContent();
-
-
+  // Función para reiniciar la cadencia de ejercicios
   const restartCadence = () => {
     setExercisesThisWeek(0);
   }
 
   // Hook para comprobar si el paciente puede realizar la rutina
-  const { canStartRoutine, completeRoutine } = useCheckDate(restartCadence, patientData.treatment_cadence, clearPersistentData);
-
+  const { completeRoutine, getCurrentDate, getDaysBetweenDates } = useCheckDate(restartCadence, patientData.treatment_cadence, clearPersistentData, setCanStartRoutine);
 
   // Función para enviar los landmarks a la API
-  const sendLandmarks = async () => {
-    const response = await sendPatientData.sendLandmarks(landmarks, date);
+  const sendLandmarks = async (results: string[], fps: number) => {
+    // Genera el Array de landmarks
+    const { landmarksArray } = await useGenerateLandmarksToSend(results);
+    const exercise_id = routine.exercises?.[currentExerciseIndex].id ?? '0';
+
+    // Actualiza la fecha y envía los landmarks a la API
+    const currentDate: Date = new Date();
+    const response = await sendPatientData.sendLandmarks(patientData.patient_id, Number(exercise_id), landmarksArray, currentDate, fps);
     console.log("Landmarks Response: ", response);
+    readData(dateExerciseStarted.toISOString(), currentDate.toISOString()).then(() => {
+      sendHealthData();
+    });
   }
 
   // Función para enviar los datos de Health Connect a la API
   const sendHealthData = async () => {
-    const response = await sendPatientData.sendHealthConnectData(steps, flights, distance, date);
+    const currentDate: Date = new Date();
+
+    const response = await sendPatientData.sendHealthConnectData(steps, flights, distance, currentDate);
     console.log("HealthConnect Response: ", response);
   }
 
@@ -113,6 +121,10 @@ export default function App() {
 
   const handleRetrieveRoutine = async (routine_id: number) => {
     // Aquí se debería hacer una llamada a la API para obtener la rutina del paciente
+    if (routine.name === '¡Rutina Diaria Completada!') {
+      setRoutine(routine);
+      return
+    }
     const response = await getPatientData.getRoutine(routine_id);
     setRoutine({
       name: response.name,
@@ -133,16 +145,19 @@ export default function App() {
     setIsAuthenticated(true)
   }
 
-
   const handleGoBack = () => {
-    if (showMediapipe) {
+    if (showMediapipe && routineStarted && isAuthenticated) {
       setShowMediapipe(false);
-    } else if (routineStarted) {
+    } else if (routineStarted && isAuthenticated) {
       setRoutineStarted(false);
     } else if (isAuthenticated) {
-      setIsAuthenticated(false);
+      setShowLogout(true);
     }
   };
+
+  const closeModal = () => {
+    setShowLogout(false);
+  }
 
   // Función para cerrar la cámara y preparar los landmarks a enviar
   const handleCloseMediapipe = async () => {
@@ -150,45 +165,29 @@ export default function App() {
     // Cierra la vista de Google Mediapipe
     setShowMediapipe(false);
 
-    completeRoutine();
 
     // Gestión del índice de ejercicio para mostrar el siguiente    
     if (currentExerciseIndex < (routine.exercises?.length ?? 0) - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     } else {
+      completeRoutine();
       await setExercisesThisWeek(exercisesThisWeek + 1);
       await setRoutineStarted(false); // Me lleva a la pantalla de empezar rutina
       await setRoutine({ name: '¡Rutina Diaria Completada!' }) // Cambia la descripción de la rutina por un mensaje de éxito
-      await setIsRoutineButtonEnabled(false); // Desactiva el botón de empezar rutina
     }
 
     // Llama a la función que devuelve los landmarks
-    const results = startPoseLandmarker();
-
-    // Genera el Array de landmarks
-    const { landmarksArray } = await useGenerateLandmarksToSend(results);
-    +
-      // Actualiza el estado de landmarks con el Array de landmarks
-      await setLandmarks(landmarksArray);
-
-    // Actualiza la fecha y envía los landmarks a la API
-    const currentDate: Date = new Date();
-    await setDate(currentDate);
-    await setFlagHC(true);
-    sendLandmarks();
+    const results = await startPoseLandmarker();
+    const fps = await getFramesPerSecond();
+    sendLandmarks(results, fps);
   }
 
-  // Hook para enviar los datos de Health Connect a la API
-  useEffect(() => {
-    // Si no es la primera vez que se ejecuta, llama a la función de lectura de datos de Health Connect
-    if (flagHC) {
-      readData().then(() => {
-        sendHealthData();
-      });
-    }
-  }, [date]);
+  const handleOpenMediapipe = () => {
+    setDateExerciseStarted(new Date());
+    setShowMediapipe(true);
+  }
 
-  const toggleSection = (section: string) => {
+  const toggleSection = (section: number) => {
     setActiveSections((prevSections) =>
       prevSections.includes(section)
         ? prevSections.filter((sec) => sec !== section)
@@ -197,7 +196,29 @@ export default function App() {
   };
 
   if (!isAuthenticated) {
-    return <LoginScreen onLogin={handleLogin} tabletNumber={tabletNumber} setTabletNumber={setTabletNumber} />;
+
+    return <LoginScreen
+      onLogin={handleLogin}
+      tabletNumber={tabletNumber}
+      setTabletNumber={setTabletNumber}
+    />;
+  }
+
+  const VentanaModal = () => {
+    return (
+      <Modal
+        visible={showLogout}
+        animationType='slide'
+        transparent={true}
+        onRequestClose={closeModal}
+      >
+        <LogoutScreen
+          setIsAuthenticated={setIsAuthenticated}
+          closeModal={closeModal}
+          clearPersistentData={clearPersistentData}
+        />
+      </Modal>
+    )
   }
 
   if (!routineStarted && isAuthenticated) {
@@ -208,7 +229,13 @@ export default function App() {
         toggleSection={toggleSection}
         handleGoBack={handleGoBack}
         handleStartRoutine={handleStartRoutine}
-        isRoutineButtonEnabled={isRoutineButtonEnabled}
+        canStartRoutine={canStartRoutine}
+        VentanaModal={VentanaModal}
+        cadence={patientData.treatment_cadence}
+        treatmentTime={patientData.treatment_time}
+        exercisesThisWeek={exercisesThisWeek}
+        getCurrentDate={getCurrentDate}
+        getDaysBetweenDates={getDaysBetweenDates}
       />
     );
   }
@@ -226,7 +253,7 @@ export default function App() {
               <Text style={styles.exerciseDetailsText}>{routine.exercises?.[currentExerciseIndex].description}</Text>
             </View>
           </ScrollView>
-          <TouchableOpacity style={styles.startRoutineButton} onPress={() => setShowMediapipe(true)}>
+          <TouchableOpacity style={styles.startRoutineButton} onPress={handleOpenMediapipe}>
             <Text style={styles.startRoutineButtonText}>Empezar Ejercicio</Text>
           </TouchableOpacity>
         </View>

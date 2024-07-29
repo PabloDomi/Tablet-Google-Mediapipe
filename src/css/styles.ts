@@ -5,8 +5,12 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loginMainContainer: {
+    flex: 1,
     backgroundColor: '#2A2D34',
-    padding: 20,
+    justifyContent: 'space-between',
+    padding: 20
   },
   container: {
     flex: 1,
@@ -74,8 +78,8 @@ export default StyleSheet.create({
     paddingHorizontal: 10,
     width: '80%',
     fontSize: 18,
-    color: '#FFFFFF',
-    backgroundColor: '#3C4047',
+    color: '#333',
+    backgroundColor: '#f5f5f5',
     fontFamily: 'system-ui',
     borderRadius: 8,
   },
@@ -149,5 +153,20 @@ export default StyleSheet.create({
   },
   disabledButton: {
     backgroundColor: '#b0b0b0', // Cambia el color para indicar que está deshabilitado
+  },
+  clearPersistenceButtonContainer: {
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 20,
+  },
+  clearPersistenceButton: {
+    padding: 10,
+    backgroundColor: '#FF0000',
+    borderRadius: 8,
+  },
+  clearPersistenceButtonText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    textAlign: 'center',
   },
 });

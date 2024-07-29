@@ -14,6 +14,10 @@ export function startPoseLandmarker(): string[] {
   return tablet_mediapipeModule.getPoseResults();
 }
 
+export function getFramesPerSecond(): number {
+  return tablet_mediapipeModule.getFramesPerSecond();
+}
+
 const emitter = new EventEmitter(tablet_mediapipeModule);
 
 export function addChangeListener(listener: (event: onLandmarkReceivedEvent) => void): Subscription {

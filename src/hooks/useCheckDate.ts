@@ -21,9 +21,8 @@ const isMonday = () => {
   return today.getDay() === 1; // 1 representa el lunes en JavaScript
 };
 
-function useCheckDate(restartCadence: () => void, treatmentTime: number, clearPersistentData: () => void){
+function useCheckDate(restartCadence: () => void, treatmentTime: number, clearPersistentData: () => void, setCanStartRoutine: (value: boolean) => void) {
     const [lastCompletedDate, setLastCompletedDate] = useState<string | null>(null);
-    const [canStartRoutine, setCanStartRoutine] = useState<boolean>(true);
     const [todayIsMonday, setTodayIsMonday] = useState<boolean>(false);
     const firstRefresh = useRef(true);
   
@@ -40,6 +39,7 @@ function useCheckDate(restartCadence: () => void, treatmentTime: number, clearPe
 
         if (firstExerciseDate && getDaysBetweenDates(firstExerciseDate, currentDate) >= treatmentTime) {
           await clearPersistentData();
+          setCanStartRoutine(true); // Restablecer canStartRoutine después de limpiar los datos
       }
   
         if (storedDate) {
@@ -74,7 +74,7 @@ function useCheckDate(restartCadence: () => void, treatmentTime: number, clearPe
       }
     };
   
-    return { lastCompletedDate, canStartRoutine, completeRoutine, todayIsMonday };
+    return { lastCompletedDate, completeRoutine, todayIsMonday, getCurrentDate, getDaysBetweenDates };
 }
 
 export default useCheckDate;
