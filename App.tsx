@@ -16,6 +16,7 @@ import useCheckDate from './src/hooks/useCheckDate';
 import usePersistentState from './src/hooks/usePersistentState';
 import LogoutScreen from './src/components/LogoutScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CountdownCamera from './src/components/CountdownCamera';
 
 
 export default function App() {
@@ -37,6 +38,9 @@ export default function App() {
 
   // Estado para mostrar el Modal de Logout
   const [showLogout, setShowLogout] = useState<boolean>(false);
+
+  // Estado para mostrar el contador de tiempo
+  const [showCountdown, setShowCountdown] = useState(false);
 
   /*
     TODO:           
@@ -92,11 +96,10 @@ export default function App() {
   const sendLandmarks = async (results: string[], fps: number) => {
     // Genera el Array de landmarks
     const { landmarksArray } = await useGenerateLandmarksToSend(results);
-    const exercise_id = routine.exercises?.[currentExerciseIndex].id ?? '0';
 
     // Actualiza la fecha y envía los landmarks a la API
     const currentDate: Date = new Date();
-    const response = await sendPatientData.sendLandmarks(patientData.patient_id, Number(exercise_id), landmarksArray, currentDate, fps);
+    const response = await sendPatientData.sendLandmarks(patientData.patient_id, (routine.exercises?.[currentExerciseIndex].name ?? ''), landmarksArray, currentDate, fps);
     console.log("Landmarks Response: ", response);
     readData(dateExerciseStarted.toISOString(), currentDate.toISOString()).then(() => {
       sendHealthData();
@@ -126,6 +129,7 @@ export default function App() {
       return
     }
     const response = await getPatientData.getRoutine(routine_id);
+    console.log("Rutina recuperada: ", response.exercises);
     setRoutine({
       name: response.name,
       description: response.description,
@@ -183,9 +187,14 @@ export default function App() {
   }
 
   const handleOpenMediapipe = () => {
+    setShowCountdown(true);
+  };
+
+  const handleCountdownFinish = () => {
+    setShowCountdown(false);
     setDateExerciseStarted(new Date());
     setShowMediapipe(true);
-  }
+  };
 
   const toggleSection = (section: number) => {
     setActiveSections((prevSections) =>
@@ -242,32 +251,40 @@ export default function App() {
 
   return (
     <>
-      {!showMediapipe ? (
-        <View style={styles.container}>
-          <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-            <Icon name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <ScrollView contentContainerStyle={styles.exerciseContent}>
-            <Text style={styles.exerciseTitle}>{routine.exercises?.[currentExerciseIndex].name}</Text>
-            <View style={styles.exerciseDetails}>
-              <Text style={styles.exerciseDetailsText}>{routine.exercises?.[currentExerciseIndex].description}</Text>
-            </View>
-          </ScrollView>
-          <TouchableOpacity style={styles.startRoutineButton} onPress={handleOpenMediapipe}>
-            <Text style={styles.startRoutineButtonText}>Empezar Ejercicio</Text>
-          </TouchableOpacity>
-        </View>
+      {showCountdown ? (
+        <CountdownCamera onCountdownFinish={handleCountdownFinish} />
       ) : (
         <>
-          <View style={styles.container}>
-            <Tablet_mediapipeView style={{ flex: 1, width: '100%', height: '80%' }} />
-          </View>
-          <View style={styles.react}>
-            <TouchableOpacity style={styles.startRoutineButton} onPress={handleCloseMediapipe}>
-              <Text style={styles.startRoutineButtonText}>Siguiente</Text>
-            </TouchableOpacity>
-            <StatusBar style="auto" />
-          </View>
+
+          {!showMediapipe ? (
+            <View style={styles.container}>
+              <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+                <Icon name="arrow-back" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+              <ScrollView contentContainerStyle={styles.exerciseContent}>
+                <Text style={styles.exerciseTitle}>{routine.exercises?.[currentExerciseIndex].name}</Text>
+                <View style={styles.exerciseDetails}>
+                  <Text style={styles.exerciseDetailsText}>{routine.exercises?.[currentExerciseIndex].description}</Text>
+                </View>
+              </ScrollView>
+              <TouchableOpacity style={styles.startRoutineButton} onPress={handleOpenMediapipe}>
+                <Text style={styles.startRoutineButtonText}>Empezar Ejercicio</Text>
+              </TouchableOpacity>
+            </View >
+          ) : (
+            <>
+              <View style={styles.container}>
+                <Tablet_mediapipeView style={{ flex: 1, width: '100%', height: '80%' }} />
+              </View>
+              <View style={styles.react}>
+                <TouchableOpacity style={styles.startRoutineButton} onPress={handleCloseMediapipe}>
+                  <Text style={styles.startRoutineButtonText}>Siguiente</Text>
+                </TouchableOpacity>
+                <StatusBar style="auto" />
+              </View>
+            </>
+          )
+          }
         </>
       )}
     </>

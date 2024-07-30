@@ -23,7 +23,9 @@
     "react-native-collapsible": "^1.6.1",
     "react-native-health-connect": "^2.0.3",
     "react-native-vector-icons": "^10.1.0",
-    "react-native-web": "~0.19.10"
+    "react-native-web": "~0.19.10",
+    "expo-camera": "~15.0.14",
+    "react-native-reanimated": "~3.10.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

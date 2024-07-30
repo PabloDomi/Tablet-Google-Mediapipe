@@ -11,7 +11,7 @@ async function checkLogin (tabletNumber: number) {
 
 async function getRoutine (routineId: number) {
     try {
-        const response = await axios.get(`https://physiotherapist-api.onrender.com/api/patient_management/getRoutineById/${routineId}`);
+        const response = await axios.get(`https://physiotherapist-api.onrender.com/api/patient_management/getRoutineByIdWithoutToken/${routineId}`);
         return response.data
     } catch (error) {
         console.error(error);

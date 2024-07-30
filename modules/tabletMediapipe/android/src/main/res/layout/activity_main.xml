@@ -38,19 +38,10 @@
             app:navGraph="@navigation/nav_graph"
             tools:context=".MainActivity" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentTop="true"
-            android:background="@color/toolbar_background">
-        </androidx.appcompat.widget.Toolbar>
-
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/toolbar"
             app:itemIconTint="@color/bg_nav_item"
             app:itemTextColor="@color/bg_nav_item"
             app:menu="@menu/menu_bottom_nav" />
@@ -62,5 +53,16 @@
             android:layout_below="@id/navigation"
             android:background="@android:color/darker_gray" />
 
+        <!-- Botón para cerrar la aplicación -->
+        <Button
+            android:id="@+id/btn_end_exercise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/acabar_ejercicio"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/holo_red_dark"
+            android:textColor="@android:color/white" />
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

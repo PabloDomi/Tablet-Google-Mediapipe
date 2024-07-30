@@ -1,11 +1,11 @@
 import axios from "axios";
 
-async function sendLandmarks(patient_id: number, exercise_id: number, landmarks: string[], date: Date, fps: number) {
+async function sendLandmarks(patient_id: number, exercise_name: string, landmarks: string[], date: Date, fps: number) {
   // Con axios
   try {
     const response = await axios.post('https://physiotherapist-api.onrender.com/api/patient_management/patientLandmarks', {
       patient_id: patient_id,
-      exercise_id: exercise_id,
+      exercise_name: exercise_name,
       landmarks: landmarks,
       date: date,
       fps: fps
