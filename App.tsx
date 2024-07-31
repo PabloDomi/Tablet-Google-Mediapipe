@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { startPoseLandmarker, getFramesPerSecond } from './modules/tabletMediapipe'
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Tablet_mediapipeView from './modules/tabletMediapipe/src/tablet_mediapipeView';
 import useHealthData from './src/hooks/useHealthData';
 import useGenerateLandmarksToSend from './src/hooks/useGenerateLandmarksToSend';
@@ -15,7 +15,7 @@ import getPatientData from './src/services/getPatientData';
 import useCheckDate from './src/hooks/useCheckDate';
 import usePersistentState from './src/hooks/usePersistentState';
 import LogoutScreen from './src/components/LogoutScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import CountdownCamera from './src/components/CountdownCamera';
 
 
@@ -49,16 +49,6 @@ export default function App() {
          correctamente.
   */
 
-  // Función para obtener y mostrar todos los datos almacenados en AsyncStorage
-  const viewAsyncStorageContent = async () => {
-    try {
-      const keys = await AsyncStorage.getAllKeys();
-      const result = await AsyncStorage.multiGet(keys);
-      console.log("Async Storage: ", result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   // Hook para obtener y almacenar los datos persistentes
   const {
@@ -79,39 +69,57 @@ export default function App() {
     canStartRoutine
   } = usePersistentState();
 
-  // Llama a esta función en algún lugar de tu código para ver los datos
-  useEffect(() => {
-    viewAsyncStorageContent();
-  }, [isAuthenticated]);
 
   // Función para reiniciar la cadencia de ejercicios
   const restartCadence = () => {
     setExercisesThisWeek(0);
   }
 
+
   // Hook para comprobar si el paciente puede realizar la rutina
   const { completeRoutine, getCurrentDate, getDaysBetweenDates } = useCheckDate(restartCadence, patientData.treatment_cadence, clearPersistentData, setCanStartRoutine);
 
+
+  // Función para obtener y mostrar todos los datos almacenados en AsyncStorage
+  // const viewAsyncStorageContent = async () => {
+  //   try {
+  //     const keys = await AsyncStorage.getAllKeys();
+  //     const result = await AsyncStorage.multiGet(keys);
+  //     console.log("Async Storage: ", result);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+
+  // Llama a esta función en algún lugar de tu código para ver los datos
+  // useEffect(() => {
+  //   viewAsyncStorageContent();
+  // }, [isAuthenticated]);
+
+
   // Función para enviar los landmarks a la API
   const sendLandmarks = async (results: string[], fps: number) => {
+
     // Genera el Array de landmarks
     const { landmarksArray } = await useGenerateLandmarksToSend(results);
 
     // Actualiza la fecha y envía los landmarks a la API
     const currentDate: Date = new Date();
-    const response = await sendPatientData.sendLandmarks(patientData.patient_id, (routine.exercises?.[currentExerciseIndex].name ?? ''), landmarksArray, currentDate, fps);
-    console.log("Landmarks Response: ", response);
+    await sendPatientData.sendLandmarks(patientData.patient_id, (routine.exercises?.[currentExerciseIndex].name ?? ''), landmarksArray, currentDate, fps);
+
     readData(dateExerciseStarted.toISOString(), currentDate.toISOString()).then(() => {
       sendHealthData();
     });
+
   }
 
   // Función para enviar los datos de Health Connect a la API
   const sendHealthData = async () => {
     const currentDate: Date = new Date();
 
-    const response = await sendPatientData.sendHealthConnectData(steps, flights, distance, currentDate);
-    console.log("HealthConnect Response: ", response);
+    await sendPatientData.sendHealthConnectData(steps, flights, distance, currentDate);
+
   }
 
   const handleStartRoutine = () => {
