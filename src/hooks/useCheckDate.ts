@@ -21,7 +21,7 @@ const isMonday = () => {
   return today.getDay() === 1; // 1 representa el lunes en JavaScript
 };
 
-function useCheckDate(restartCadence: () => void, treatmentTime: number, clearPersistentData: () => void, setCanStartRoutine: (value: boolean) => void) {
+function useCheckDate( treatmentTime: number, clearPersistentData: () => void, setCanStartRoutine: (value: boolean) => void, setExercisesThisWeek: (exercises: number) => void) {
     const [lastCompletedDate, setLastCompletedDate] = useState<string | null>(null);
     const [todayIsMonday, setTodayIsMonday] = useState<boolean>(false);
     const firstRefresh = useRef(true);
@@ -55,7 +55,7 @@ function useCheckDate(restartCadence: () => void, treatmentTime: number, clearPe
         setTodayIsMonday(isMonday());
 
         if (todayIsMonday) {
-          restartCadence();
+          setExercisesThisWeek(0);
         }
       };
   

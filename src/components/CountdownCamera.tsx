@@ -6,9 +6,9 @@ import styles from '../css/styles';
 
 const CountdownCamera = ({ onCountdownFinish }: { onCountdownFinish: () => void }) => {
     const [permission, requestPermission] = useCameraPermissions();
-    const [countdown, setCountdown] = useState(10);
+    const [countdown, setCountdown] = useState(20);
 
-    const countdownAnimation = useSharedValue(10);
+    const countdownAnimation = useSharedValue(20);
 
     useEffect(() => {
         if (countdown === 0) {

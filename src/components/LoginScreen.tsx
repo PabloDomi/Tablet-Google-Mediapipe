@@ -1,10 +1,37 @@
 import { View, Text, TextInput, Button } from 'react-native';
 import styles from '../css/styles';
-import { LoginScreenProps } from '../utils/types';
+import { CheckTabletTypes, LoginScreenProps } from '../utils/types';
 import getPatientData from '../services/getPatientData';
 
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, tabletNumber, setTabletNumber }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ setPatientData, routine, setRoutine, tabletNumber, setTabletNumber, setIsAuthenticated }) => {
+
+    const handleRetrieveRoutine = async (routine_id: number) => {
+        // Aquí se debería hacer una llamada a la API para obtener la rutina del paciente
+        if (routine.name === '¡Rutina Diaria Completada!') {
+            setRoutine(routine);
+            return
+        }
+        const response = await getPatientData.getRoutine(routine_id);
+        console.log("Rutina recuperada: ", response.exercises);
+        setRoutine({
+            name: response.name,
+            description: response.description,
+            estimatedTime: response.estimatedTime,
+            exercises: response.exercises,
+        });
+    }
+
+    const onLogin = async (data: CheckTabletTypes) => {
+        await setPatientData({
+            routine_id: data.routine_id,
+            patient_id: data.patient_id,
+            treatment_time: data.treatment_time,
+            treatment_cadence: data.treatment_cadence
+        });
+        handleRetrieveRoutine(data.routine_id);
+        setIsAuthenticated(true)
+    }
 
     const handleLogin = async () => {
         if (tabletNumber === 0) {

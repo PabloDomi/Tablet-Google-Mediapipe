@@ -65,7 +65,7 @@ const LogoutScreen = ({ setIsAuthenticated, closeModal, clearPersistentData }: L
                     padding: 10,
                     borderRadius: 8,
                 }}
-                    onPress={() => setLogoutPassword('')}>
+                    onPress={closeModal}>
                     <Text style={{ color: '#ffffff', fontSize: 18 }}>Cancelar</Text>
                 </TouchableOpacity>
             </View>

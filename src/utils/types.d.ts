@@ -20,9 +20,12 @@ export interface CheckTabletTypes {
   treatment_cadence: number;
 }
 export interface LoginScreenProps {
-    onLogin: (response: CheckTabletTypes) => void;
+    setPatientData: SetStateAction;
+    routine: RoutineType;
+    setRoutine: SetStateAction;
     tabletNumber: number;
     setTabletNumber: SetStateAction
+    setIsAuthenticated: SetStateAction
 }
 
 export interface getRoutineTypes {

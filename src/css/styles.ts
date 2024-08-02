@@ -169,4 +169,23 @@ export default StyleSheet.create({
     color: '#FFFFFF',
     textAlign: 'center',
   },
+  infoContainer: {
+    backgroundColor: '#8f99b3',
+    padding: 20,
+    borderRadius: 10,
+    position: 'relative',
+    marginTop: 20,
+  },
+  iconContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+  },
+  infoText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontFamily: 'system-ui',
+    textAlign: 'justify',
+    marginTop: 25,
+  },
 });

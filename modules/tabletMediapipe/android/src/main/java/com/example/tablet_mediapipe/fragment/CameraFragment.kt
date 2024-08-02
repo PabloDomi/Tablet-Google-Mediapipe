@@ -72,6 +72,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private var frameCount = 0
     private var startTime = System.currentTimeMillis()
 
+    // Add a flag to indicate a new session
+    private var isNewSession: Boolean = true
+
     override fun onResume() {
         super.onResume()
         // Make sure that all permissions are still present, since the
@@ -277,6 +280,12 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             }
         }
 
+        // Clear poseResults only if it's a new session
+        if (isNewSession) {
+            poseResults.clear()
+            isNewSession = false
+        }
+
         logResults(resultBundle.results.first())
     }
 
@@ -298,6 +307,11 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         activity?.runOnUiThread {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // Function to start a new session
+    fun startNewSession() {
+        isNewSession = true
     }
 }
 
