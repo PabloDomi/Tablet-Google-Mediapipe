@@ -23,7 +23,9 @@
       "permissions": [
         "android.permission.health.READ_STEPS",
         "android.permission.health.READ_DISTANCE",
-        "android.permission.health.READ_FLOORS_CLIMBED"
+        "android.permission.health.READ_FLOORS_CLIMBED",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -51,6 +53,11 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "50873dae-995b-4006-8fb7-3972675e36c9"
+      }
+    }
   }
 }

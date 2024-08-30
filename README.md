@@ -21,14 +21,14 @@ Además, la aplicación permite a los usuarios obtener información sobre los pa
 ### Clonar el repositorio
 
 ```sh
-git clone https://github.com/PabloDomi/stepCounter
-cd stepCounter
+git clone https://github.com/PabloDomi/Tablet-Google-Mediapipe
+cd Tablet-Google-Mediapipe
 ```
 
 ## Instalación
 ```sh
-npx expo install
-```
+npm install
+``` 
 
 ## Ejecución
 ### En caso de querer correrlo en local (probablemente necesitarás descargar la apk de Health Connect Toolbox para poder testearlo correctamente):
@@ -42,6 +42,10 @@ npm install -g eas-cli
 eas login
 eas build:configure
 eas build --profile development --platform android
-npm start
+```
+
+### Después de usar el código BIDI que te proporcionarán e instalar la aplicación en el dispositivo se debe ejecutar el siguiente comando:
+```sh
+npx expo start
 ```
 Para más información sobre el EAS Build y Submit (subirlo a la AppStore), vea este link: [EAS Introduction](https://docs.expo.dev/build/introduction/)
