@@ -51,7 +51,7 @@ export default function StartExercise({ completeRoutine, currentExerciseIndex, s
         setRoutineStarted(false);
     }
 
-    // Función para cerrar la cámara y preparar los landmarks a enviar
+    // Función para cerrar la cámara y preparar los landmarks a enviarS
     const handleCloseMediapipe = async () => {
 
         let results = []

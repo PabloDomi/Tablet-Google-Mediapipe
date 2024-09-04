@@ -7,13 +7,11 @@ import getPatientData from '../services/getPatientData';
 const LoginScreen: React.FC<LoginScreenProps> = ({ setPatientData, routine, setRoutine, tabletNumber, setTabletNumber, setIsAuthenticated }) => {
 
     const handleRetrieveRoutine = async (routine_id: number) => {
-        // Aquí se debería hacer una llamada a la API para obtener la rutina del paciente
         if (routine.name === '¡Rutina Diaria Completada!') {
             setRoutine(routine);
             return
         }
         const response = await getPatientData.getRoutine(routine_id);
-        console.log("Rutina recuperada: ", response.exercises);
         setRoutine({
             name: response.name,
             description: response.description,
