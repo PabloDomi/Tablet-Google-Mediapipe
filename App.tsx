@@ -3,19 +3,10 @@ import LoginScreen from './src/components/LoginScreen';
 import RoutineScreen from './src/components/RoutineScreen';
 import useCheckDate from './src/hooks/useCheckDate';
 import usePersistentState from './src/hooks/usePersistentState';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 import StartExercise from './src/components/StartExercise';
 
 
 export default function App() {
-
-  /*
-    TODO:           
-      6. (Calentada) mostrar una barra de progreso según se van realizando los ejercicios? (opcional)
-      7. Intentar de alguna manera añadir datos a la aplicación de Health Connect para ver si lee y envía los datos
-         correctamente.
-  */
-
 
   // Estado de comienzo de rutina
   const [routineStarted, setRoutineStarted] = useState<boolean>(false);
